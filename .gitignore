@@ -17,3 +17,4 @@ examples/HelloFreeType/proj.android/build/
 examples/HelloFreeType/proj.android/.gradle/
 examples/HelloFreeType/data/*.dll
 examples/HelloFreeType/proj.cmake/build/
+**/.externalNativeBuild
