@@ -4,9 +4,9 @@
     If you just started here and don't understand the code completely, feel free to come back later.
     You can start from example.cpp and example.h, which main functions are called from here.
 */
-#include "oxygine/core/oxygine.h"
-#include "oxygine/Stage.h"
-#include "oxygine/DebugActor.h"
+#include "ox/oxygine.hpp"
+#include "ox/Stage.hpp"
+#include "ox/DebugActor.hpp"
 #include "example.h"
 
 
@@ -63,7 +63,7 @@ void run()
 
 
     // Create the stage. Stage is a root node for all updateable and drawable objects
-    Stage::instance = new Stage(true);
+    Stage::instance = new Stage();
     Point size = core::getDisplaySize();
     getStage()->setSize(size);
 
@@ -85,7 +85,7 @@ void run()
 
 #if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR
     // On iPhone mainloop is called automatically by CADisplayLink, see int main() below
-    return;
+    //return;
 #endif
 
     // This is the main game loop.
@@ -151,7 +151,7 @@ extern "C"
 
 #if TARGET_OS_IPHONE || TARGET_OS_SIMULATOR
         // If parameter 2 is set to 1, refresh rate will be 60 fps, 2 - 30 fps, 3 - 15 fps.
-        SDL_iPhoneSetAnimationCallback(core::getWindow(), 1, one, nullptr);
+        //SDL_iPhoneSetAnimationCallback(core::getWindow(), 1, one, nullptr);
 #endif
 
 #if EMSCRIPTEN
