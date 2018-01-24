@@ -17,7 +17,7 @@ namespace oxygine
     class Image;
     struct glyph;
     typedef size_t glyphOptions;
-    
+
     class ResFontFT : public ResFont
     {
     public:
@@ -28,6 +28,7 @@ namespace oxygine
         static void setSnapSize(int size);
         static void setMaxSnapSize(int size);
         static void setAtlasSize(int w, int h);
+        static void setGlobalWorldScale(float s);
 
         struct postProcessData
         {
@@ -75,6 +76,6 @@ namespace oxygine
     };
 
 
-    
+
     void ftGenDefault(ResFontFT::postProcessData& data);
 }

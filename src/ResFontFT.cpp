@@ -110,6 +110,7 @@ namespace oxygine
 
     static int FT_SNAP_SIZE = 1000;
     static int FT_MAX_SNAP_SIZE = 200;
+    static float FT_GLOBAL_WORLD_SCALE = 0.0f;
     static oxygine::Point FT_ATLAS_SIZE(512, 512);
 
 
@@ -265,6 +266,11 @@ namespace oxygine
         FT_ATLAS_SIZE = Point(w, h);
     }
 
+    void ResFontFT::setGlobalWorldScale(float s)
+    {
+        FT_GLOBAL_WORLD_SCALE = s;
+    }
+
     ResFontFT::ResFontFT() : _atlas(CLOSURE(this, &ResFontFT::createTexture)), _face(0)
     {
         _atlas.init();
@@ -324,6 +330,8 @@ namespace oxygine
 
     const oxygine::Font* ResFontFT::getClosestFont(float worldScale, int styleFontSize, float& resScale) const
     {
+        if (FT_GLOBAL_WORLD_SCALE != 0.0f)
+            worldScale = FT_GLOBAL_WORLD_SCALE;
         int fontSize = (int)(styleFontSize * worldScale);
         if (!fontSize)
             return 0;
