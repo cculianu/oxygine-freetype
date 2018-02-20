@@ -43,7 +43,7 @@ public:
 
         button->addEventListener(TouchEvent::CLICK, [](Event * e)->void
         {
-            log::messageln("button clicked");
+            logs::messageln("button clicked");
         });
 
 #endif
