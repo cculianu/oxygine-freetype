@@ -192,7 +192,7 @@ namespace oxygine
             g.opt = opt;
 
 
-            if (src.w && src.h)
+            //if (src.w && src.h)
             {
                 ResFontFT::postProcessData gd;
                 gd.src = &src;
