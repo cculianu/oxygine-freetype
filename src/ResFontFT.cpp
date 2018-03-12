@@ -200,7 +200,14 @@ namespace oxygine
                 gd.gl = &g;
                 gd.opt = opt;
                 gd.font = this;
-                _ftGen(gd);
+
+
+                if (src.w && src.h)
+                    _ftGen(gd);
+                else
+                {
+                    tempImage.init(0, 0, TF_R8G8B8A8);
+                }
 
                 _rs->_atlas.add(tempImage.lock(), srcRect, t);
                 OX_ASSERT(t);
@@ -210,6 +217,7 @@ namespace oxygine
                 g.src.size = g.src.size.div(sz);
                 g.texture = safeSpCast<NativeTexture>(t);
             }
+
 
             g.sw = tempImage.getWidth();
             g.sh = tempImage.getHeight();
