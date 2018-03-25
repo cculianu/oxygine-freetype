@@ -1,7 +1,8 @@
 #include "oxygine-framework.h"
 #include <functional>
 #include "ResFontFT.h"
-
+#include "FontEffects.h"
+#include "fe/fe.h"
 using namespace oxygine;
 
 //it is our resources
@@ -9,11 +10,12 @@ using namespace oxygine;
 //It is important on mobile devices with limited memory and you would load/unload them
 Resources gameResources;
 
-enum TextMode
-{
-    tm_no_shadow = 0,
-    tm_shadow = 1,
-    tm_shadow2 = 2,
+
+fe_bundle *bundle = 0;
+
+enum {
+    EFFECT_A = 1,
+    EFFECT_B
 };
 
 class MainActor: public Actor
@@ -65,22 +67,21 @@ public:
 
         //initialize text style
         TextStyle style;
-#if OXYGINE_VERSION > 3
+
         style.font = gameResources.getResFont("main");
         style.fontSize = 80;
-#else
-        style.font = gameResources.getResFont("main")->getFont(0, 40);
-#endif
-        style.color = Color::Crimson;
+
+        //style.color = Color::Crimson;
         style.vAlign = TextStyle::VALIGN_MIDDLE;
         style.hAlign = TextStyle::HALIGN_MIDDLE;
         style.baselineScale = 0.7f;
 
         //apply our custom option
-        style.options = tm_shadow;
+        style.options = EFFECT_A;
 
         text->setStyle(style);
         text->setHtmlText("Hello\n <div opt='2'>World!</div>");
+
 
         _text = text;
     }
@@ -145,62 +146,28 @@ typedef oxygine::intrusive_ptr<MainActor> spMainActor;
 
 void example_preinit() {}
 
-void myShadowsFilter(ResFontFT::postProcessData& data)
-{
-    Image& destIm = *data.dest;
-    ImageData& src = *data.src;
-
-    ImageData rc;
-
-
-    Image tempImage;
-    tempImage.init(src.w, src.h, TF_R8G8B8A8);
-
-    rc = tempImage.lock();
-    operations::blitPremultiply(src, rc);
-
-    src = rc;
-
-    if (data.opt == tm_no_shadow)
-    {
-        //if shadows disabled
-        destIm.swap(tempImage);
-        return;
-    }
-
-
-    const int xoffset = 4;
-    const int yoffset = 3;
-
-    //initialize destination Image with increased size
-    destIm.init(src.w + xoffset, src.h + yoffset, TF_R8G8B8A8);
-    //clear it
-    destIm.fillZero();
-
-
-    //copy black image as shadow
-    rc = destIm.lock(Rect(xoffset, yoffset, src.w, src.h));
-
-    Color shadowColor = data.opt == tm_shadow ? Color(0, 0, 0, 255) : Color(255, 0, 0, 255);
-    operations::blitColored(src, rc, shadowColor);
-
-    //copy original image
-    operations::op_blend_one_invSrcAlpha op;
-    rc = destIm.lock(Rect(0, 0, src.w, src.h));
-    operations::applyOperation(op, src, rc);
-}
-
 //called from entry_point.cpp
 void example_init()
 {
     ResFontFT::initLibrary();
-
-    //use it for adding shadows
-    ResFontFT::setGlyphPostProcessor(myShadowsFilter);
+    
+    oxfe::init();
 
     //load xml file with resources definition
     gameResources.loadXML("res.xml");
 
+
+    file::buffer buf;
+    file::read("fonts/example.fe", buf);
+    bundle = fe_bundle_load(buf.getData(), buf.getSize());
+
+    fe_effect *effect;
+
+    effect = fe_bundle_get_effect_by_name(bundle, "beta");
+    oxfe::out_nodes[EFFECT_A] = fe_effect_find_node_by_type(effect, fe_node_type_out);
+
+    effect = fe_bundle_get_effect_by_name(bundle, "kappa");
+    oxfe::out_nodes[EFFECT_B] = fe_effect_find_node_by_type(effect, fe_node_type_out);
 
     //lets create our client code simple actor
     //spMainActor was defined above as smart intrusive pointer (read more: http://www.boost.org/doc/libs/1_57_0/libs/smart_ptr/intrusive_ptr.html)
@@ -219,6 +186,8 @@ void example_update()
 //called each frame from entry_point.cpp
 void example_destroy()
 {
+    fe_bundle_free(bundle);
+
     //free previously loaded resources
     gameResources.free();
     ResFontFT::freeLibrary();

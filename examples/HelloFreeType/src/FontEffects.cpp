@@ -65,6 +65,7 @@ namespace oxfe
 
         p.gl->offset_x = res.x;
         p.gl->offset_y = -res.y;
+        p.gl->advance_x = (int)(p.gl->advance_x * node->effect->distance);
 
         fe_image_free(&res.image);
     }
