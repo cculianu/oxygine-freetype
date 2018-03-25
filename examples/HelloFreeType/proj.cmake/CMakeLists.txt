@@ -10,10 +10,14 @@ add_subdirectory(../../../../oxygine-freetype/ oxygine-freetype)
 include_directories(${OXYGINE_FREETYPE_INCLUDE_DIRS})
 link_directories(${OXYGINE_FREETYPE_LIBRARY_DIRS})
 
+
+add_subdirectory(../../../font-effects-lib/ font-effects-lib)
+include_directories(../../../font-effects-lib/include)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OXYGINE_CXX_FLAGS} ${OXYGINE_FREETYPE_CXX_FLAGS}")
 
-add_executable(HelloFreeType ../src/main.cpp ../src/example.cpp  ../src/example.h )
-target_link_libraries(HelloFreeType ${OXYGINE_CORE_LIBS} ${OXYGINE_FREETYPE_LIBS} oxygine-freetype)
+add_executable(HelloFreeType ../src/main.cpp ../src/example.cpp  ../src/example.h ../src/FontEffects.h ../src/FontEffects.cpp)
+target_link_libraries(HelloFreeType ${OXYGINE_CORE_LIBS} ${OXYGINE_FREETYPE_LIBS} oxygine-freetype font-effects)
 
 
 
