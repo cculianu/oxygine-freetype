@@ -12,7 +12,7 @@ link_directories(${OXYGINE_FREETYPE_LIBRARY_DIRS})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OXYGINE_CXX_FLAGS} ${OXYGINE_FREETYPE_CXX_FLAGS}")
 
-add_executable(HelloFreeType ../src/main.cpp ../src/example.cpp  ../src/example.h )
+add_executable(HelloFreeType ../src/main.cpp ../src/example.cpp  ../src/example.h  ../src/test.h   ../src/test.cpp )
 target_link_libraries(HelloFreeType ${OXYGINE_CORE_LIBS} ${OXYGINE_FREETYPE_LIBS} oxygine-freetype)
 
 
