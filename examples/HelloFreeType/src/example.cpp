@@ -33,6 +33,7 @@ public:
 
         addButton("scale+", "scale+");
         addButton("scale-", "scale-");
+        addButton("ne", "next effect");
 
         //create TextField Actor
         _text = new TextField();
@@ -72,6 +73,17 @@ public:
         if (id == "scale-")
         {
             _text->setScale(_text->getScaleX() - 0.05f);
+        }
+
+        if (id == "ne")
+        {
+            static int i = 0;
+            ++i;
+            fe_effect *effect = fe_bundle_get_effect(bundle, i % bundle->num);
+            oxfe::out_nodes[EFFECT_A] = fe_effect_find_node_by_type(effect, fe_node_type_out);      
+
+            ((ResFontFT*)_text->getFont())->clear();
+            _text->setText("");
         }
 
     }

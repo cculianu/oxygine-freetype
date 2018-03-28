@@ -56,6 +56,8 @@ namespace oxygine
         const Font* getFont(const char* name, int size) const override;
         const Font* getClosestFont(float worldScale, int styleFontSize, float& resScale) const override;
 
+        void clear();
+
     protected:
         friend class FontFT;
 

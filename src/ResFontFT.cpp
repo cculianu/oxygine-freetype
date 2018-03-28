@@ -354,6 +354,16 @@ namespace oxygine
         return getFont(0, fontSize);
     }
 
+    void ResFontFT::clear()
+    {
+        _atlas.clean();
+        for (fonts::iterator i = _fonts.begin(); i != _fonts.end(); ++i)
+        {
+            FontFT &f = *i;
+            f.clear();
+        }
+    }
+
     void ResFontFT::_load(LoadResourcesContext* context)
     {
 
