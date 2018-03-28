@@ -3,6 +3,8 @@
 #include "ResFontFT.h"
 #include "FontEffects.h"
 #include "fe/fe.h"
+#include "test.h"
+
 using namespace oxygine;
 
 //it is our resources
@@ -18,138 +20,69 @@ enum {
     EFFECT_B
 };
 
-class MainActor: public Actor
+void example_preinit() {}
+
+
+class TestActor : public Test
 {
 public:
+
     spTextField _text;
-    spSprite    _button;
-
-    MainActor()
+    TestActor()
     {
-        //create simple Sprite
-        spSprite button = new Sprite();
 
-        //setup it:
-        //set button.png image. Resource 'button' defined in 'res.xml'
-        button->setResAnim(gameResources.getResAnim("button"));
-
-        //centered button at screen
-        Vector2 pos = getStage()->getSize() / 2 - button->getSize() / 2;
-        button->setPosition(pos);
-
-        //handle click to button
-        EventCallback cb = CLOSURE(this, &MainActor::buttonClicked);
-        button->addEventListener(TouchEvent::CLICK, cb);
-
-#ifdef CLOSURE_FUNCTION //if your compiler supports lambda
-
-        button->addEventListener(TouchEvent::CLICK, [](Event * e)->void
-        {
-            logs::messageln("button clicked");
-        });
-
-#endif
-
-        //attach button as child to current actor
-        addChild(button);
-
-        _button = button;
-
-
-        //second part
+        addButton("scale+", "scale+");
+        addButton("scale-", "scale-");
 
         //create TextField Actor
-        spTextField text = new TextField();
+        _text = new TextField();
         //attach it as child to button
-        text->attachTo(button);
-        //centered in button
-        text->setPosition(button->getSize() / 2);
+        _text->attachTo(content);
+        //centered
+        //_text->setX(content->getWidth() / 4);
+        _text->setY(content->getHeight() / 2);
 
         //initialize text style
         TextStyle style;
-
         style.font = gameResources.getResFont("main");
         style.fontSize = 80;
 
-        //style.color = Color::Crimson;
-        style.vAlign = TextStyle::VALIGN_MIDDLE;
-        style.hAlign = TextStyle::HALIGN_MIDDLE;
+        style.vAlign = TextStyle::VALIGN_BOTTOM;
+        style.hAlign = TextStyle::HALIGN_LEFT;
         style.baselineScale = 0.7f;
 
         //apply our custom option
         style.options = EFFECT_A;
 
-        text->setStyle(style);
-        text->setHtmlText("Hello\n <div opt='2'>World!</div>");
-
-
-        _text = text;
+        _text->setStyle(style);
     }
 
-    void buttonClicked(Event* event)
+    void doUpdate(const UpdateState& us)
     {
-        //user clicked to button
-
-        //animate button by changing color
-        _button->setColor(Color::White);
-        _button->addTween(Sprite::TweenColor(Color::Green), 500, 1, true);
-
-        //animate text by scaling
-        _text->setScale(1.0f);
-        _text->addTween(Actor::TweenScale(1.1f), 500, 1, true);
-
-        //and change text
-        _text->setHtmlText("Clicked!");
-
-        //lets create and run sprite with simple animation
-        runSprite();
+        char txt[255];
+        safe_sprintf(txt, " <div opt='2'>tm:</div> %d", getTimeMS());
+        _text->setHtmlText(txt);
     }
-
-    void runSprite()
+    void clicked(string id)
     {
-        spSprite sprite = new Sprite();
-        addChild(sprite);
+        if (id == "scale+")
+        {
+            _text->setScale(_text->getScaleX() + 0.05f);
+        }
+        if (id == "scale-")
+        {
+            _text->setScale(_text->getScaleX() - 0.05f);
+        }
 
-        int duration = 500;//500 ms
-        int loops = -1;//infinity loops
-
-        //animation has 7 columns, check 'res.xml'
-        ResAnim* animation = gameResources.getResAnim("anim");
-
-        //add animation tween to sprite
-        //TweenAnim would change animation frames
-        sprite->addTween(Sprite::TweenAnim(animation), duration, loops);
-
-        Vector2 destPos = getStage()->getSize() - sprite->getSize();
-        Vector2 srcPos = Vector2(0, destPos.y);
-        //set sprite initial position
-        sprite->setPosition(srcPos);
-
-        //add another tween: TweenQueue
-        //TweenQueue is a collection of tweens
-        spTweenQueue tweenQueue = new TweenQueue();
-        tweenQueue->setDelay(1500);
-        //first, move sprite to dest position
-        tweenQueue->add(Sprite::TweenPosition(destPos), 1500, 1);
-        //then fade it out smoothly
-        tweenQueue->add(Sprite::TweenAlpha(0), 500, 1);
-
-        sprite->addTween(tweenQueue);
-
-        //and remove sprite from tree when tweenQueue is empty
-        //if you don't hold any references to sprite it would be deleted automatically
-        tweenQueue->detachWhenDone();
     }
 };
-//declare spMainActor as intrusive_ptr holder of MainActor
-typedef oxygine::intrusive_ptr<MainActor> spMainActor;
 
-void example_preinit() {}
 
 //called from entry_point.cpp
 void example_init()
 {
     ResFontFT::initLibrary();
+    ResFontFT::setAtlasSize(2048, 1024);
     
     oxfe::init();
 
@@ -164,17 +97,15 @@ void example_init()
     fe_effect *effect;
 
     effect = fe_bundle_get_effect_by_name(bundle, "beta");
-    oxfe::out_nodes[EFFECT_A] = fe_effect_find_node_by_type(effect, fe_node_type_out);
-
-    effect = fe_bundle_get_effect_by_name(bundle, "kappa");
     oxfe::out_nodes[EFFECT_B] = fe_effect_find_node_by_type(effect, fe_node_type_out);
 
-    //lets create our client code simple actor
-    //spMainActor was defined above as smart intrusive pointer (read more: http://www.boost.org/doc/libs/1_57_0/libs/smart_ptr/intrusive_ptr.html)
-    spMainActor actor = new MainActor;
+    effect = fe_bundle_get_effect_by_name(bundle, "kappa");
+    oxfe::out_nodes[EFFECT_A] = fe_effect_find_node_by_type(effect, fe_node_type_out);
 
-    //and add it to Stage as child
-    getStage()->addChild(actor);
+    Test::init();
+
+    Test::instance = new TestActor;
+    getStage()->addChild(Test::instance);
 }
 
 
@@ -191,4 +122,5 @@ void example_destroy()
     //free previously loaded resources
     gameResources.free();
     ResFontFT::freeLibrary();
+    Test::free();
 }
