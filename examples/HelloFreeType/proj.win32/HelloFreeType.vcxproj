@@ -115,10 +115,12 @@
     <ClCompile Include="../src/example.cpp" />
     <ClCompile Include="..\..\..\src\ResFontFT.cpp" />
     <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../src/example.h" />
     <ClInclude Include="..\..\..\src\ResFontFT.h" />
+    <ClInclude Include="..\src\test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
