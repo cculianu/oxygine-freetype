@@ -1,6 +1,10 @@
 cmake_minimum_required (VERSION 2.6)
 project (OXYGINE_FREETYPE)
 
+# Set the C++ standard to C++20
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 if (EMSCRIPTEN)
 	set(CMAKE_CXX_FLAGS "-Wno-warn-absolute-paths -s USE_FREETYPE=1")
 	set(OXYGINE_FREETYPE_INCLUDE_DIRS 
@@ -26,8 +30,6 @@ else()
 
 
 endif(EMSCRIPTEN)
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include_directories(${OXYGINE_FREETYPE_INCLUDE_DIRS})
 add_library(oxygine-freetype STATIC 
